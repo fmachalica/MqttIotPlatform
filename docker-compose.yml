@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15
+    container_name: MqttIotDBContainer
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - mqttIotPostgres:/var/lib/postgresql/data
+    networks:
+      - mqttIotNetwork
+    restart: unless-stopped
+    
+
+  mqtt:
+    image: eclipse-mosquitto
+    container_name: MqttIotBrokerContainer
+    ports:
+      - "1883:1883"
+    volumes:
+      - /home/filip/MqttIotPlatform/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - /home/filip/MqttIotPlatform/mosquitto/data:/mosquitto/data
+      - /home/filip/MqttIotPlatform/mosquitto/log:/mosquitto/log
+    networks:
+      - mqttIotNetwork
+    restart: unless-stopped
+
+networks:
+  mqttIotNetwork:
+    driver: bridge
+
+volumes:
+  mqttIotPostgres:
