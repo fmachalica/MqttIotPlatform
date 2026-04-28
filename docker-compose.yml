@@ -28,6 +28,48 @@ services:
       - mqttIotNetwork
     restart: unless-stopped
 
+  mqttDbBridge:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: MqttDbBridgeContainer
+    volumes:
+      - /home/filip/MqttIotPlatform/mqttDBBridge/program:/app
+    networks:
+      - mqttIotNetwork
+    depends_on:
+      - mqtt
+      - db
+    working_dir: /app
+    command: dotnet run
+    restart: unless-stopped
+
+  backend:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: MqttIotBackendContainer
+    volumes:
+      - /home/filip/MqttIotPlatform/backend/program:/app
+    networks:
+      - mqttIotNetwork
+    depends_on:
+      - mqttDbBridge
+      - mqtt
+      - db
+    ports:
+      - "5000:5000"
+    working_dir: /app
+    command: dotnet run
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: MqttIotFrontendContainer
+    ports:
+      - "3000:80"
+    networks:
+      - mqttIotNetwork
+    depends_on:
+      - backend
+
 networks:
   mqttIotNetwork:
     driver: bridge

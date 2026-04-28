@@ -1,0 +1,2 @@
+GET http://localhost:5000/measurements?start_time=2026-04-23T18:00:00&end_time=2026-04-27T18:00:00
+# curl "http://backend:5000/measurements?start_time=2026-04-23T18:00:00&end_time=2026-04-26T18:00:00"
